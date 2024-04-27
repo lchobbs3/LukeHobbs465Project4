@@ -10,6 +10,8 @@
 
 using namespace std;
 
+bool check = false;
+
 inline double to_int(std::string const& str) {
     std::istringstream ss(str);
 
@@ -117,7 +119,7 @@ Vertex normalVector(Triangle triangle) {
 
 Color calculateDiffuse(Vertex n) {
     // Calculate normal vector for triangle
-    float theta = max(0, n * light);
+    float theta = max(0.0f, n * light);
 
     return Color(bunny_color.channel[0] * light.c.channel[0] * theta, bunny_color.channel[1] *
         light.c.channel[1] * theta, bunny_color.channel[2] * light.c.channel[2] * theta);
@@ -134,14 +136,10 @@ Color calculatePhong(Vertex n) {
     // Calculate r: 2n(n*l)-l
     Vertex r = (n * 2) * (n * light) - light;
     r.normalize();
-    float theta = pow(max(0.0f, view_pos * r), 50.0f);
-    //cout << view_pos.uni_z << "*" << r.uni_z << endl;
-    //cout << " WRONG: " << thetaTest << endl;
-    //cout << view_pos * r << endl;
+    //cout << r.uni_x << " " << r.uni_y << " " << r.uni_z << endl;
+    float theta = pow(max(0.0f, view_pos * r), (float)PHONG);
     Color result = Color(light.c.channel[0] * phong_color.channel[0] * theta, light.c.channel[1] *
         phong_color.channel[1] * theta, light.c.channel[2] * phong_color.channel[2] * theta);
-    //cout << light.c.channel[2] << "*" << phong_color.channel[2] << "*" << theta << endl;
-    //result.print();
     return result;
 }
 
@@ -172,14 +170,20 @@ void trianglesShading()
         {
             Vertex n = normalVector(triangles_list[i]);
             n.normalize();
+            //normalVector(triangles_list[i]);
             for (int j = 0; j < 3; j++) //vertex index
             {
                 for (int k = 0; k < 3; k++) //color channel index
                 {
                     //triangles_list[i].c[j].channel[k] = bunny_color.channel[k];
-                    triangles_list[i].c[j] = Color(calculatePhong(n));
-                    cout << triangles_list[i].c[j].channel[0] << " " << triangles_list[i].c[j].channel[1] << " " <<
-                        triangles_list[i].c[j].channel[2] << endl;
+                    if (shading_type == 1) {
+                        triangles_list[i].c[j] = Color(calculateDiffuse(n) + calculateAmbient());
+                    }
+                    else if (shading_type == 2) {
+                        triangles_list[i].c[j] = Color(calculateDiffuse(n) + calculateAmbient() + calculatePhong(n));
+                    }
+                    /*cout << triangles_list[i].c[j].channel[0] << " " << triangles_list[i].c[j].channel[1] << " " <<
+                        triangles_list[i].c[j].channel[2] << endl;*/
 
                 }
             }
@@ -189,19 +193,19 @@ void trianglesShading()
 
 void initialize()
 {
-    light.x = 0;
-    light.y = 0;
-    light.z = 5;
-    light.c.channel[0] = 0.9;
-    light.c.channel[1] = 0.9;
-    light.c.channel[2] = 0.9;
+    light.x = 4.0;
+    light.y = 1.0;
+    light.z = 2.0;
+    light.c.channel[0] = 0.3;
+    light.c.channel[1] = 0.3;
+    light.c.channel[2] = 0.3;
 
     light.normalize();
 
     //light color Cl
-    light.c.channel[0] = 0.9;
-    light.c.channel[1] = 0.9;
-    light.c.channel[2] = 0.9;
+    light.c.channel[0] = 0.8;
+    light.c.channel[1] = 0.8;
+    light.c.channel[2] = 0.8;
 
     //Ambient Ca
     ambient_color.channel[0] = 0.2;
@@ -209,17 +213,17 @@ void initialize()
     ambient_color.channel[2] = 0.2;
 
     //Object surface color Cr
-    bunny_color.channel[0] = 0.9;
-    bunny_color.channel[1] = 0.7;
-    bunny_color.channel[2] = 0.1;
+    bunny_color.channel[0] = 0.6;
+    bunny_color.channel[1] = 0.6;
+    bunny_color.channel[2] = 0.6;
 
     //Specular Color Cs
-    phong_color.channel[0] = 0.8;
-    phong_color.channel[1] = 0.8;
-    phong_color.channel[2] = 0.8;
+    phong_color.channel[0] = 0.3;
+    phong_color.channel[1] = 0.3;
+    phong_color.channel[2] = 0.3;
 
-    view_pos.x = 0.0f;
-    view_pos.y = 0.0f;
+    view_pos.x = 2.0f;
+    view_pos.y = 7.0f;
     view_pos.z = 5.0f;
     view_pos.normalize();
 }
@@ -243,7 +247,7 @@ void loadObjFiles(const char* filename, vector<Vertex>& vertice_list, vector<Tri
             v.x = (GLfloat)to_float(valueX);
             v.y = (GLfloat)to_float(valueY);
             v.z = (GLfloat)to_float(valueZ);
-            // v.normalize();
+            //v.normalize();
 
 
             /* By default, the initial colors for all the vertices are grey */
@@ -269,6 +273,7 @@ void loadObjFiles(const char* filename, vector<Vertex>& vertice_list, vector<Tri
             triangle.c[0] = vertice_list[i0].c;
             triangle.c[1] = vertice_list[i1].c;
             triangle.c[2] = vertice_list[i2].c;
+            normalVector(triangle);
             triangles_list.push_back(triangle);
         }
     }

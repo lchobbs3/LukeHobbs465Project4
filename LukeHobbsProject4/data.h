@@ -18,7 +18,7 @@
 #include <GL/gl.h>
 #endif
 
-#define PHONG 0.0001
+#define PHONG 0.1
 
 
 struct Color {
@@ -254,4 +254,3 @@ int shading_type = 0; //0 - no shading; 1 - ambient + diffuse shading; 2 - ambie
 int mouse_down = 0; //Represent the left mouse key is clicked down
 int change_mode = 0; //0 means rotation; 1 means translation
 int current_x = 0, current_y = 0;
-
