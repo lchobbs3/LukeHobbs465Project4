@@ -136,10 +136,15 @@ Color calculatePhong(Vertex n) {
     // Calculate r: 2n(n*l)-l
     Vertex r = (n * 2) * (n * light) - light;
     r.normalize();
-    //cout << r.uni_x << " " << r.uni_y << " " << r.uni_z << endl;
-    float theta = pow(max(0.0f, view_pos * r), (float)PHONG);
+
+    Vertex v = (view_pos-n);
+    v.normalize();
+    //cout << r.x << " " << r.y << " " << r.z << endl;
+    //cout << v.uni_x << " " << v.uni_y << " " << v.uni_z << endl;
+    float theta = pow(max(0.0f, v * r), (float)PHONG);
     Color result = Color(light.c.channel[0] * phong_color.channel[0] * theta, light.c.channel[1] *
         phong_color.channel[1] * theta, light.c.channel[2] * phong_color.channel[2] * theta);
+    //cout << theta << endl;
     return result;
 }
 
@@ -218,14 +223,13 @@ void initialize()
     bunny_color.channel[2] = 0.6;
 
     //Specular Color Cs
-    phong_color.channel[0] = 0.3;
-    phong_color.channel[1] = 0.3;
-    phong_color.channel[2] = 0.3;
+    phong_color.channel[0] = 1.0;
+    phong_color.channel[1] = 1.0;
+    phong_color.channel[2] = 1.0;
 
-    view_pos.x = 2.0f;
-    view_pos.y = 7.0f;
-    view_pos.z = 5.0f;
-    view_pos.normalize();
+    view_pos.x = 4.0f;
+    view_pos.y = 1.0f;
+    view_pos.z = 2.0f;
 }
 
 void loadObjFiles(const char* filename, vector<Vertex>& vertice_list, vector<Triangle>& triangles_list)

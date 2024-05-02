@@ -18,7 +18,7 @@
 #include <GL/gl.h>
 #endif
 
-#define PHONG 0.1
+#define PHONG 50
 
 
 struct Color {

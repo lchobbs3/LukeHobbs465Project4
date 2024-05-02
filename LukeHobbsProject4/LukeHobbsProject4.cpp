@@ -35,7 +35,7 @@ int main(int argc,  char * argv[]) {
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(200, 100);
     glutCreateWindow("Bunny");
-    loadObjFiles("bunny_high.obj", vertice_list, triangles_list);
+    loadObjFiles("bunny_low.obj", vertice_list, triangles_list);
     initialize();
     
     
